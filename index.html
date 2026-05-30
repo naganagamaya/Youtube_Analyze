@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>北海道Vlog チャンネル分析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.3.0/dist/tabler-icons.min.css" rel="stylesheet" />
+<style>
+:root{
+  --bg:#F5F4EF; --surface:#FFFFFF; --surface-2:#EEEDE6;
+  --text:#20251F; --text-2:#5C615B; --text-3:#9A9F97;
+  --border:rgba(32,37,31,0.12); --border-2:rgba(32,37,31,0.22);
+  --accent:#0F6E56; --accent-soft:#E1F5EE;
+  --studio:#534AB7; --studio-soft:#EEEDFE;
+  --warn:#9A5E0C; --warn-soft:#FAEEDA;
+  --danger:#A32D2D; --danger-soft:#FCEBEB;
+  --good:#3B6D11; --good-soft:#EAF3DE;
+  --info:#185FA5; --info-soft:#E6F1FB;
+  --radius:14px; --radius-sm:9px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#16191A; --surface:#1E2223; --surface-2:#262B2C;
+    --text:#ECEFEA; --text-2:#A6ABA4; --text-3:#6E736C;
+    --border:rgba(255,255,255,0.12); --border-2:rgba(255,255,255,0.22);
+    --accent:#5DCAA5; --accent-soft:#0F3D31;
+    --studio:#AFA9EC; --studio-soft:#2A2660;
+    --warn:#EF9F27; --warn-soft:#3D2A08;
+    --danger:#F09595; --danger-soft:#3A1414;
+    --good:#97C459; --good-soft:#1F3209;
+    --info:#85B7EB; --info-soft:#0E2A45;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Zen Kaku Gothic New",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1.1rem 4rem}
+h1{font-family:"Zen Maru Gothic",sans-serif;font-size:24px;font-weight:700;letter-spacing:.01em}
+h2{font-size:18px;font-weight:700}
+h3{font-size:15px;font-weight:700;margin-bottom:.5rem}
+.muted{color:var(--text-2)} .tiny{font-size:12px;color:var(--text-3);line-height:1.6}
+a{color:var(--info);text-decoration:none}
+b{font-weight:700}
+
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.logo{width:44px;height:44px;border-radius:13px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.topbar .sub{font-size:12px;color:var(--text-2)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.35rem;margin-bottom:1rem}
+input,button,select{font-family:inherit}
+input[type=text],input[type=password],input[type=number]{width:100%;height:40px;padding:0 12px;font-size:14px;background:var(--surface);border:1px solid var(--border-2);border-radius:var(--radius-sm);color:var(--text)}
+input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+label.fld{font-size:13px;color:var(--text-2);display:block;margin:.75rem 0 5px}
+button{cursor:pointer;border-radius:var(--radius-sm);transition:.15s}
+.btn{height:40px;padding:0 18px;font-size:14px;font-weight:500;background:var(--accent);color:#fff;border:none;white-space:nowrap}
+.btn:hover{filter:brightness(1.08)} .btn:active{transform:scale(.98)}
+.btn-ghost{height:34px;padding:0 13px;font-size:13px;background:transparent;color:var(--text-2);border:1px solid var(--border-2)}
+.btn-ghost:hover{background:var(--surface-2)}
+.row{display:flex;gap:8px}
+
+.mode-tabs{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1.1rem}
+.mode-tabs button{flex:1;padding:11px 6px;font-size:13px;border:none;border-radius:0;background:var(--surface);color:var(--text-2)}
+.mode-tabs button.active{background:var(--surface-2);color:var(--text);font-weight:700}
+.mode-tabs button+button{border-left:1px solid var(--border)}
+.panel{display:none}.panel.active{display:block}
+
+.steps{margin:.4rem 0 1rem}
+.step{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px}
+.step-n{flex-shrink:0;width:23px;height:23px;border-radius:50%;background:var(--studio-soft);color:var(--studio);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.step-t{font-size:13px;line-height:1.6}
+.kbd{font-family:ui-monospace,monospace;font-size:12px;background:var(--surface-2);padding:1px 7px;border-radius:5px;border:1px solid var(--border)}
+
+.col-table{width:100%;border-collapse:collapse;font-size:13px}
+.col-table th{text-align:left;padding:7px 8px;font-size:12px;color:var(--text-2);font-weight:500;border-bottom:1px solid var(--border)}
+.col-table td{padding:8px;border-bottom:1px solid var(--border);vertical-align:top}
+.col-table tr:last-child td{border-bottom:none}
+.pill{font-size:10px;padding:2px 8px;border-radius:99px;white-space:nowrap;font-weight:500}
+.pill-req{background:var(--danger-soft);color:var(--danger)}
+.pill-opt{background:var(--studio-soft);color:var(--studio)}
+.col-jp{font-weight:500} .col-why{font-size:12px;color:var(--text-2);line-height:1.5}
+
+.dropzone{border:2px dashed var(--border-2);border-radius:var(--radius-sm);padding:1.9rem 1rem;text-align:center;cursor:pointer;color:var(--text-2);font-size:14px;transition:.15s}
+.dropzone:hover,.dropzone.drag{background:var(--accent-soft);border-color:var(--accent)}
+.msg{border-radius:var(--radius-sm);padding:.7rem 1rem;font-size:13px;margin-top:.8rem}
+.msg-ok{background:var(--good-soft);color:var(--good);border:1px solid var(--good)}
+.msg-err{background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger);margin:0 0 1rem}
+.hidden{display:none!important}
+.sample{margin-top:.9rem;height:32px;padding:0 13px;font-size:12px;background:var(--info-soft);color:var(--info);border:1px solid var(--info)}
+
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:.5rem}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.9rem 1rem;position:relative}
+.metric .lab{font-size:12px;color:var(--text-2);margin-bottom:5px}
+.metric .val{font-size:23px;font-weight:700;font-family:"Zen Maru Gothic",sans-serif}
+.metric .sub{font-size:11px;color:var(--text-3);margin-top:3px;line-height:1.4}
+.metric .tag{position:absolute;top:11px;right:11px;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:500}
+.tag-api{background:var(--accent-soft);color:var(--accent)}
+.tag-studio{background:var(--studio-soft);color:var(--studio)}
+
+.guide{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.guide-i{background:var(--surface-2);border-radius:var(--radius-sm);padding:.9rem 1rem}
+.guide-r{font-size:11px;font-weight:700;color:var(--studio);margin-bottom:3px}
+.guide-n{font-size:14px;font-weight:700;margin-bottom:3px}
+.guide-d{font-size:12px;color:var(--text-2);line-height:1.6}
+
+.seg{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1.1rem}
+.seg button{flex:1;padding:10px 4px;font-size:13px;border:none;border-radius:0;background:var(--surface);color:var(--text-2)}
+.seg button.active{background:var(--surface-2);color:var(--text);font-weight:700}
+.seg button+button{border-left:1px solid var(--border)}
+.tab{display:none}.tab.active{display:block}
+
+.ctitle{font-size:14px;font-weight:700;margin-bottom:.2rem}
+.ccap{font-size:12px;color:var(--text-2);margin-bottom:.9rem;line-height:1.6}
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:.9rem}
+.qi{font-size:11px;padding:7px 9px;border-radius:var(--radius-sm);line-height:1.45}
+.q1{background:var(--good-soft);color:var(--good)} .q2{background:var(--warn-soft);color:var(--warn)}
+.q3{background:var(--info-soft);color:var(--info)} .q4{background:var(--surface-2);color:var(--text-2)}
+
+.vt{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+.vt th{text-align:left;padding:6px;color:var(--text-2);font-weight:500;border-bottom:1px solid var(--border);font-size:12px}
+.vt td{padding:9px 6px;border-bottom:1px solid var(--border);vertical-align:middle}
+.vt tr:last-child td{border-bottom:none}
+.vtitle{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vmeta{font-size:11px;color:var(--text-3)}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:99px;white-space:nowrap;font-weight:500}
+.b-good{background:var(--good-soft);color:var(--good)} .b-avg{background:var(--warn-soft);color:var(--warn)}
+.b-low{background:var(--danger-soft);color:var(--danger)} .b-new{background:var(--info-soft);color:var(--info)}
+
+.preds{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1rem}
+.pred{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem}
+.pred .lab{font-size:12px;color:var(--text-2);margin-bottom:6px}
+.pred .val{font-size:20px;font-weight:700;font-family:"Zen Maru Gothic",sans-serif}
+.pred .per{font-size:11px;color:var(--text-3);margin-top:3px}
+
+.ai-h{display:flex;align-items:center;gap:8px;margin-bottom:.6rem}
+.ai-b{font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--radius-sm)}
+.ai1{background:var(--studio-soft);color:var(--studio)} .ai2{background:var(--accent-soft);color:var(--accent)} .ai3{background:var(--warn-soft);color:var(--warn)}
+.ai-c{font-size:14px;line-height:1.8}
+.ai-c .conc{background:var(--surface-2);border-radius:var(--radius-sm);padding:.8rem .95rem}
+.ai-load{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-2)}
+.spin{width:15px;height:15px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.legend{display:flex;gap:14px;margin-bottom:.7rem;font-size:12px;color:var(--text-2);flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:4px}
+.ld{width:10px;height:10px;border-radius:2px}
+.footer{text-align:center;font-size:11px;color:var(--text-3);margin-top:2rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="logo"><i class="ti ti-mountain"></i></div>
+    <div>
+      <h1>北海道Vlog チャンネル分析</h1>
+      <div class="sub">数字に騙されない。育てるための指標だけを正しく。</div>
+    </div>
+  </div>
+
+  <!-- ========== セットアップ ========== -->
+  <div class="card" id="setupCard">
+    <h2>CSVをアップロードして分析</h2>
+    <p class="muted" style="font-size:13px;margin:.5rem 0 1.1rem">YouTube Studioから書き出したCSVを入れるだけ。クリック率・視聴維持率まで分析できる一番おすすめの方法です。</p>
+
+    <div class="mode-tabs">
+      <button class="active" onclick="setMode('csv')"><i class="ti ti-file-spreadsheet"></i> CSVアップロード</button>
+      <button onclick="setMode('api')"><i class="ti ti-cloud"></i> API</button>
+      <button onclick="setMode('manual')"><i class="ti ti-pencil"></i> 手動</button>
+    </div>
+
+    <!-- CSV -->
+    <div class="panel active" id="panel-csv">
+      <h3><i class="ti ti-list-numbers"></i> CSVの取り出し方</h3>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-t"><b>YouTube Studio</b>を開く（PC推奨）→ 左メニューの<b>アナリティクス</b></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-t"><b>コンテンツ</b>タブ → 右上の<b>詳細モード</b> <span class="kbd">≡</span></div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-t">表の上の <span class="kbd">+</span> 列を追加 で、下の「あると◎」の項目を足す（任意）</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-t">右上の<b>エクスポート</b> <span class="kbd">⬇</span> → <b>カンマ区切りの値（.csv）</b></div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-t">ダウンロードしたCSVを下の枠に<b>ドロップ</b>するだけ</div></div>
+      </div>
+
+      <h3 style="margin-top:1rem"><i class="ti ti-columns"></i> CSVに必要な項目</h3>
+      <table class="col-table">
+        <thead><tr><th style="width:38%">項目名（Studio表記）</th><th style="width:20%">区分</th><th>何に使う</th></tr></thead>
+        <tbody>
+          <tr><td class="col-jp">動画のタイトル</td><td><span class="pill pill-req">必須</span></td><td class="col-why">動画の識別</td></tr>
+          <tr><td class="col-jp">動画公開時刻</td><td><span class="pill pill-req">必須</span></td><td class="col-why">新旧フェア比較（公開日数で正規化）</td></tr>
+          <tr><td class="col-jp">視聴回数</td><td><span class="pill pill-req">必須</span></td><td class="col-why">集客力・1日あたり再生数</td></tr>
+          <tr><td class="col-jp">高く評価（いいね）</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why">エンゲージ率（刺さり度）</td></tr>
+          <tr><td class="col-jp">表示回数</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why">マップの点の大きさ＝露出量</td></tr>
+          <tr><td class="col-jp">表示回数のクリック率</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why"><b>本命①</b> サムネ/タイトルの良し悪し</td></tr>
+          <tr><td class="col-jp">平均再生率</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why"><b>本命②</b> 視聴維持率（中身の強さ）</td></tr>
+        </tbody>
+      </table>
+      <p class="tiny" style="margin:.6rem 0 1rem"><i class="ti ti-bulb"></i> 最低でも<b style="color:var(--text)">必須3つ</b>があればOK。列名が多少違っても自動で探します。英語表示のStudioでも対応。</p>
+
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('csvFile').click()">
+        <i class="ti ti-upload" style="font-size:27px;display:block;margin-bottom:8px;color:var(--accent)"></i>
+        <b style="color:var(--text)">ここにCSVをドロップ</b><br>またはクリックして選択
+      </div>
+      <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleCSV(event)" />
+      <div id="csvOk" class="msg msg-ok hidden"></div>
+      <button class="sample" onclick="loadSample()"><i class="ti ti-flask"></i> サンプルで動きを見る</button>
+    </div>
+
+    <!-- API -->
+    <div class="panel" id="panel-api">
+      <p class="tiny" style="margin-top:0">APIは自動取得できますが<b style="color:var(--text)">クリック率・視聴維持率は取得不可</b>（再生数・いいね・コメントまで）。本格分析にはCSV推奨。</p>
+      <label class="fld">YouTube Data API キー</label>
+      <input type="password" id="apiKey" placeholder="AIzaSy..." />
+      <p class="tiny" style="margin-top:6px"><a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank">Google Cloud Console</a>でYouTube Data API v3を有効化してキー取得。</p>
+      <label class="fld">チャンネルID または @ハンドル</label>
+      <div class="row"><input type="text" id="channelId" placeholder="@momoko_hokkaido" /><button class="btn" onclick="fetchAPI()"><i class="ti ti-search"></i> 取得</button></div>
+    </div>
+
+    <!-- 手動 -->
+    <div class="panel" id="panel-manual">
+      <p class="tiny" style="margin-top:0">Studioの数字を見ながら直接入力。空欄でもOK。</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:.5rem">
+        <div><label class="fld" style="margin-top:0">登録者数</label><input type="number" id="mSubs" placeholder="523" /></div>
+        <div><label class="fld" style="margin-top:0">過去28日の登録増</label><input type="number" id="mGain" placeholder="40" /></div>
+        <div><label class="fld" style="margin-top:0">総再生数</label><input type="number" id="mViews" placeholder="48200" /></div>
+        <div><label class="fld" style="margin-top:0">動画本数</label><input type="number" id="mVids" placeholder="34" /></div>
+        <div><label class="fld" style="margin-top:0">平均クリック率(%)</label><input type="number" step="0.1" id="mCtr" placeholder="4.2" /></div>
+        <div><label class="fld" style="margin-top:0">平均視聴維持率(%)</label><input type="number" step="0.1" id="mRet" placeholder="38" /></div>
+      </div>
+      <button class="btn" style="margin-top:.8rem" onclick="fetchManual()"><i class="ti ti-check"></i> 分析する</button>
+    </div>
+  </div>
+
+  <div id="errorBox" class="msg msg-err hidden"></div>
+
+  <!-- ========== ダッシュボード ========== -->
+  <div id="dashboard" class="hidden">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem">
+      <div class="logo" style="width:40px;height:40px;font-size:20px;background:var(--accent-soft);color:var(--accent)"><i class="ti ti-mountain"></i></div>
+      <div><div style="font-size:16px;font-weight:700" id="chName">北海道Vlogチャンネル</div><div class="tiny" id="chSrc">-</div></div>
+      <button class="btn-ghost" style="margin-left:auto" onclick="backToSetup()"><i class="ti ti-arrow-back-up"></i> 戻る</button>
+    </div>
+
+    <div class="metrics" id="metrics"></div>
+    <p class="tiny" style="margin-bottom:1rem"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:var(--accent);vertical-align:1px;margin-right:3px"></span>基本指標 &nbsp; <span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:var(--studio);vertical-align:1px;margin-right:3px"></span>Studio CSVでのみ取れる本命指標</p>
+
+    <div class="seg">
+      <button class="active" onclick="showTab('overview')"><i class="ti ti-compass"></i> 何を見る</button>
+      <button onclick="showTab('videos')"><i class="ti ti-layout-grid"></i> 動画フェア比較</button>
+      <button onclick="showTab('growth')"><i class="ti ti-chart-line"></i> 成長予測</button>
+      <button onclick="showTab('ai')"><i class="ti ti-sparkles"></i> 結局どうする</button>
+    </div>
+
+    <!-- 何を見る -->
+    <div id="tab-overview" class="tab active">
+      <div class="card">
+        <h3>チャンネルを育てる「重要指標」の順番</h3>
+        <p class="ccap">小さいチャンネルでは、再生数そのものより「アルゴリズムに評価される行動」を見るのが正解です。</p>
+        <div class="guide">
+          <div class="guide-i"><div class="guide-r">最重要 ①</div><div class="guide-n">クリック率（CTR）</div><div class="guide-d">サムネ＋タイトルが「見たい」と思われたか。おすすめに出る入口。<b>CSVのみ取得可</b></div></div>
+          <div class="guide-i"><div class="guide-r">最重要 ②</div><div class="guide-n">視聴維持率</div><div class="guide-d">最後まで見られたか。次に勧められるかを決める最大要因。<b>CSVのみ取得可</b></div></div>
+          <div class="guide-i"><div class="guide-r">補助 ③</div><div class="guide-n">エンゲージ率</div><div class="guide-d">(いいね＋コメント)÷再生数。新旧フェアに「刺さり度」が分かる。</div></div>
+          <div class="guide-i"><div class="guide-r">結果 ④</div><div class="guide-n">再生数・登録者</div><div class="guide-d">①②③が良ければ後から付いてくる「結果指標」。追いすぎ注意。</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 動画フェア比較 -->
+    <div id="tab-videos" class="tab">
+      <div class="card">
+        <div class="ctitle">動画フェアマップ（新旧の差をならした比較）</div>
+        <p class="ccap">横＝今の集客力（1日あたり再生数）、縦＝刺さり度（エンゲージ率）。公開日数に左右されず純粋に「どの動画が良いか」が見えます。<span id="ctrNote"></span></p>
+        <div style="position:relative;width:100%;height:300px"><canvas id="quadChart" role="img" aria-label="動画フェア比較散布図">動画フェアマップ</canvas></div>
+        <div class="quad">
+          <div class="qi q1"><b>右上＝鉄板の勝ちパターン</b><br>同じ型を増やすべき</div>
+          <div class="qi q3"><b>左上＝隠れた名作</b><br>刺さってるのに露出不足。サムネ改善＆宣伝</div>
+          <div class="qi q2"><b>右下＝入口は強いが薄い</b><br>クリックされるが中身が物足りない</div>
+          <div class="qi q4"><b>左下＝見直し候補</b><br>テーマ・編集を再検討</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ctitle">動画リスト（新旧フェア評価つき）</div>
+        <p class="ccap">「総再生数」は古い動画ほど有利なので、評価は<b>1日あたり再生数とエンゲージ率</b>で判定。公開2週間未満は「初動計測中」と表示します。</p>
+        <table class="vt"><thead><tr><th style="width:40%">動画</th><th style="width:18%">総再生</th><th style="width:18%">1日あたり</th><th style="width:24%">評価</th></tr></thead><tbody id="vtbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- 成長予測 -->
+    <div id="tab-growth" class="tab">
+      <div class="preds">
+        <div class="pred"><div class="lab">3ヶ月後</div><div class="val" id="p3m">-</div><div class="per" id="p3mDate">-</div></div>
+        <div class="pred"><div class="lab">6ヶ月後</div><div class="val" id="p6m">-</div><div class="per" id="p6mDate">-</div></div>
+        <div class="pred"><div class="lab">1,000人達成</div><div class="val" id="p1k">-</div><div class="per">現ペース維持の場合</div></div>
+        <div class="pred"><div class="lab">収益化ライン</div><div class="val" id="pMon">-</div><div class="per">登録1000人＋総視聴4000時間</div></div>
+      </div>
+      <div class="card">
+        <div class="ctitle">登録者の推移と予測</div>
+        <p class="ccap">実測がない期間は推定です。「現ペース」と「テコ入れ時」の2本で幅を示します。</p>
+        <div class="legend"><span><span class="ld" style="background:#1D9E75"></span>実績/推定</span><span><span class="ld" style="background:#5DCAA5"></span>予測（現ペース）</span><span><span class="ld" style="background:#85B7EB"></span>予測（テコ入れ）</span></div>
+        <div style="position:relative;width:100%;height:250px"><canvas id="growthChart" role="img" aria-label="登録者数の推移と予測">登録者推移</canvas></div>
+      </div>
+    </div>
+
+    <!-- 結局どうする -->
+    <div id="tab-ai" class="tab">
+      <div style="margin-bottom:1rem"><div class="ai-h"><span class="ai-b ai1"><i class="ti ti-clipboard-check"></i> 現状診断</span><span style="font-size:14px;font-weight:700">いまどういう状態？</span></div><div class="ai-c card" id="aiSummary"><div class="ai-load"><div class="spin"></div>AIが診断中...</div></div></div>
+      <div style="margin-bottom:1rem"><div class="ai-h"><span class="ai-b ai2"><i class="ti ti-target"></i> 予測</span><span style="font-size:14px;font-weight:700">このままだとどうなる？</span></div><div class="ai-c card" id="aiPrediction"><div class="ai-load"><div class="spin"></div>計算中...</div></div></div>
+      <div style="margin-bottom:1rem"><div class="ai-h"><span class="ai-b ai3"><i class="ti ti-rocket"></i> 次の一手</span><span style="font-size:14px;font-weight:700">で、どうすればいい？</span></div><div class="ai-c card" id="aiActions"><div class="ai-load"><div class="spin"></div>アイデア生成中...</div></div></div>
+    </div>
+  </div>
+
+  <div class="footer">北海道Vlog チャンネル分析 ・ Powered by Gemini</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+// ===== 状態 =====
+let STATE={subs:0,totalViews:0,videoCount:0,monthlyGain:0,videos:[],hasCtr:false,source:'',manualCtr:null,manualRet:null};
+let growthChart=null,quadChart=null;
+const DAY=86400000;
+
+// ===== 小物 =====
+function setMode(m){['csv','api','manual'].forEach(x=>document.getElementById('panel-'+x).classList.toggle('active',x===m));document.querySelectorAll('.mode-tabs button').forEach((b,i)=>b.classList.toggle('active',['csv','api','manual'][i]===m));}
+function showTab(n){['overview','videos','growth','ai'].forEach(t=>document.getElementById('tab-'+t).classList.toggle('active',t===n));document.querySelectorAll('.seg button').forEach((b,i)=>b.classList.toggle('active',['overview','videos','growth','ai'][i]===n));}
+function backToSetup(){document.getElementById('setupCard').classList.remove('hidden');document.getElementById('dashboard').classList.add('hidden');}
+function showError(m){const e=document.getElementById('errorBox');e.textContent=m;e.classList.remove('hidden');setTimeout(()=>e.classList.add('hidden'),9000);}
+function fmtFull(n){return Math.round(n).toLocaleString('ja-JP');}
+function fmtK(n){if(n>=10000)return(Math.round(n/1000)/10)+'万';if(n>=1000)return(Math.round(n/100)/10)+'k';return String(Math.round(n));}
+function ageDays(iso){return Math.max(1,(Date.now()-new Date(iso))/DAY);}
+function num(v){if(v==null)return 0;const s=String(v).replace(/[^0-9.\-]/g,'');const n=parseFloat(s);return isNaN(n)?0:n;}
+function findCol(h,keys){for(const c of h){const cl=c.toLowerCase();for(const k of keys)if(cl.includes(k.toLowerCase()))return c;}return null;}
+function avg(a){const f=a.filter(x=>x!=null&&!isNaN(x));return f.length?f.reduce((s,x)=>s+x,0)/f.length:null;}
+function median(a){const f=[...a].filter(x=>!isNaN(x)).sort((x,y)=>x-y);if(!f.length)return 0;const m=Math.floor(f.length/2);return f.length%2?f[m]:(f[m-1]+f[m])/2;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+// ===== ドラッグ&ドロップ =====
+const dz=document.getElementById('dropzone');
+['dragover','dragenter'].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.add('drag');}));
+['dragleave','drop'].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.remove('drag');}));
+dz.addEventListener('drop',ev=>{const f=ev.dataTransfer.files[0];if(f){const inp=document.getElementById('csvFile');const dt=new DataTransfer();dt.items.add(f);inp.files=dt.files;handleCSV({target:inp});}});
+
+// ===== CSV =====
+function handleCSV(ev){const file=ev.target.files[0];if(!file)return;Papa.parse(file,{header:true,skipEmptyLines:true,complete:r=>{try{parseCSV(r.data);}catch(e){showError('CSV解析失敗: '+e.message);}}});}
+function parseCSV(rows){
+  if(!rows||!rows.length){showError('データが空です');return;}
+  const h=Object.keys(rows[0]);
+  const cTitle=findCol(h,['動画のタイトル','動画タイトル','title','コンテンツ']);
+  const cDate=findCol(h,['公開時刻','公開日','published','動画公開']);
+  const cViews=findCol(h,['視聴回数','views','再生回数']);
+  const cImp=findCol(h,['表示回数','impressions']);
+  const cCtr=findCol(h,['クリック率','click-through','ctr']);
+  const cRet=findCol(h,['平均再生率','平均視聴率','average percentage','視聴維持']);
+  const cLikes=findCol(h,['高く評価','いいね','likes']);
+  if(!cTitle||!cViews){showError('必須項目（動画のタイトル・視聴回数）が見つかりません。CSVの列をご確認ください。');return;}
+  const vr=rows.filter(r=>{const t=(r[cTitle]||'').toString().toLowerCase();return r[cTitle]&&!t.includes('合計')&&!t.includes('total');});
+  const videos=vr.map(r=>({title:r[cTitle]||'(無題)',publishedAt:cDate?(r[cDate]||new Date().toISOString()):new Date().toISOString(),views:num(r[cViews]),likes:cLikes?num(r[cLikes]):0,ctr:cCtr?num(r[cCtr]):null,retention:cRet?num(r[cRet]):null,impressions:cImp?num(r[cImp]):null,comments:0})).filter(v=>v.views>0||v.impressions>0);
+  if(!videos.length){showError('動画データが見つかりませんでした');return;}
+  STATE.videos=videos;STATE.totalViews=videos.reduce((s,v)=>s+v.views,0);STATE.videoCount=videos.length;STATE.hasCtr=videos.some(v=>v.ctr!=null);STATE.source='CSV';STATE.subs=0;STATE.manualCtr=null;STATE.manualRet=null;
+  estimateGain();
+  const ex=[];if(STATE.hasCtr)ex.push('クリック率');if(videos.some(v=>v.retention!=null))ex.push('視聴維持率');if(videos.some(v=>v.impressions!=null))ex.push('表示回数');
+  const ok=document.getElementById('csvOk');ok.classList.remove('hidden');ok.innerHTML='<i class="ti ti-circle-check"></i> '+videos.length+'本を読み込みました'+(ex.length?'（'+ex.join('・')+'あり → 本格分析）':'');
+  document.getElementById('chSrc').textContent='Studio CSV ('+videos.length+'本)'+(ex.length?' / '+ex.join('・'):'');
+  setTimeout(launch,400);
+}
+function estimateGain(){const s=[...STATE.videos].sort((a,b)=>new Date(a.publishedAt)-new Date(b.publishedAt));if(STATE.subs>0&&s.length>=2){const mo=Math.max(1,(Date.now()-new Date(s[0].publishedAt))/(DAY*30));STATE.monthlyGain=Math.round(STATE.subs/mo);}else if(STATE.subs>0){STATE.monthlyGain=Math.max(5,Math.round(STATE.subs*0.06));}}
+
+// ===== YouTube API =====
+async function fetchAPI(){
+  const key=document.getElementById('apiKey').value.trim(),raw=document.getElementById('channelId').value.trim();
+  if(!key||!raw){showError('APIキーとチャンネルIDを入力してください');return;}
+  try{
+    let cid=raw;
+    if(!raw.startsWith('UC')){const hd=raw.replace('@','');const r=await fetch(`https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${hd}&key=${key}`);const d=await r.json();if(!d.items||!d.items.length)throw new Error('チャンネルが見つかりません');cid=d.items[0].id;}
+    const cr=await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails&id=${cid}&key=${key}`);const cd=await cr.json();
+    if(!cd.items||!cd.items.length)throw new Error('チャンネルが見つかりません');const ch=cd.items[0];const up=ch.contentDetails.relatedPlaylists.uploads;
+    const pr=await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=${up}&maxResults=30&key=${key}`);const pl=await pr.json();
+    const ids=(pl.items||[]).map(i=>i.contentDetails.videoId).join(',');let vids=[];
+    if(ids){const r2=await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${ids}&key=${key}`);const d2=await r2.json();vids=(d2.items||[]).map(v=>({title:v.snippet.title,publishedAt:v.snippet.publishedAt,views:num(v.statistics?.viewCount),likes:num(v.statistics?.likeCount),comments:num(v.statistics?.commentCount),ctr:null,retention:null,impressions:null}));}
+    STATE.subs=num(ch.statistics.subscriberCount);STATE.totalViews=num(ch.statistics.viewCount);STATE.videoCount=num(ch.statistics.videoCount);STATE.videos=vids;STATE.hasCtr=false;STATE.source='API';STATE.manualCtr=null;STATE.manualRet=null;
+    document.getElementById('chName').textContent=ch.snippet.title;document.getElementById('chSrc').textContent='YouTube API ('+vids.length+'本)';
+    estimateGain();launch();
+  }catch(e){showError('エラー: '+(e.message||'取得失敗'));}
+}
+
+// ===== 手動 =====
+function fetchManual(){
+  STATE.subs=num(document.getElementById('mSubs').value);STATE.totalViews=num(document.getElementById('mViews').value);STATE.videoCount=num(document.getElementById('mVids').value)||0;
+  const g=num(document.getElementById('mGain').value);STATE.monthlyGain=g>0?Math.round(g*30/28):Math.max(5,Math.round(STATE.subs*0.06));
+  const ctr=num(document.getElementById('mCtr').value),ret=num(document.getElementById('mRet').value);
+  STATE.manualCtr=ctr||null;STATE.manualRet=ret||null;STATE.hasCtr=!!ctr;STATE.videos=[];STATE.source='手動入力';
+  document.getElementById('chSrc').textContent='手動入力';launch();
+}
+
+// ===== 起動 =====
+function launch(){renderMetrics();renderVideos();renderGrowth();renderPredictions();document.getElementById('setupCard').classList.add('hidden');document.getElementById('dashboard').classList.remove('hidden');showTab('overview');triggerAI();window.scrollTo({top:0,behavior:'smooth'});}
+
+function renderMetrics(){
+  const g=document.getElementById('metrics');g.innerHTML='';
+  const avgVPV=STATE.videoCount>0?STATE.totalViews/STATE.videoCount:0;
+  const eng=STATE.videos.length?STATE.videos.reduce((s,v)=>s+(v.likes+v.comments),0)/Math.max(1,STATE.videos.reduce((s,v)=>s+v.views,0))*100:null;
+  const aCtr=STATE.manualCtr!=null?STATE.manualCtr:(STATE.hasCtr?avg(STATE.videos.filter(v=>v.ctr!=null).map(v=>v.ctr)):null);
+  const aRet=STATE.manualRet!=null?STATE.manualRet:(STATE.videos.some(v=>v.retention!=null)?avg(STATE.videos.filter(v=>v.retention!=null).map(v=>v.retention)):null);
+  const cards=[];
+  if(STATE.subs>0)cards.push({l:'登録者数',v:fmtFull(STATE.subs),s:'月 +'+fmtFull(STATE.monthlyGain)+' ペース',t:'api'});
+  cards.push({l:'総再生数',v:fmtK(STATE.totalViews),s:'動画あたり '+fmtK(avgVPV),t:'api'});
+  cards.push({l:'動画本数',v:STATE.videoCount||STATE.videos.length,s:'分析対象',t:'api'});
+  cards.push({l:'エンゲージ率',v:eng!=null?eng.toFixed(1)+'%':'—',s:'刺さり度・新旧フェア',t:'api'});
+  cards.push({l:'平均クリック率',v:aCtr!=null?aCtr.toFixed(1)+'%':'CSVで取得',s:'本命①サムネ/タイトル',t:'studio'});
+  cards.push({l:'平均視聴維持率',v:aRet!=null?aRet.toFixed(0)+'%':'CSVで取得',s:'本命②中身の強さ',t:'studio'});
+  cards.forEach(c=>{const el=document.createElement('div');el.className='metric';el.innerHTML=`<span class="tag ${c.t==='studio'?'tag-studio':'tag-api'}">${c.t==='studio'?'CSV':'基本'}</span><div class="lab">${c.l}</div><div class="val">${c.v}</div><div class="sub">${c.s}</div>`;g.appendChild(el);});
+}
+
+function renderVideos(){
+  document.getElementById('ctrNote').textContent=STATE.hasCtr?' 点の大きさ＝表示回数です。':'';
+  const tb=document.getElementById('vtbody');tb.innerHTML='';
+  if(!STATE.videos.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:1rem">動画データなし（CSV/APIで読み込むと表示）</td></tr>';if(quadChart)quadChart.destroy();return;}
+  const en=STATE.videos.map(v=>{const d=ageDays(v.publishedAt);return{...v,days:d,vpd:v.views/d,eng:v.views>0?(v.likes+v.comments)/v.views*100:0,isNew:d<14};});
+  const mVPD=median(en.map(e=>e.vpd)),mEng=median(en.map(e=>e.eng));
+  [...en].sort((a,b)=>b.vpd-a.vpd).forEach(v=>{
+    let badge;
+    if(v.isNew)badge='<span class="badge b-new">初動計測中</span>';
+    else if(v.vpd>=mVPD&&v.eng>=mEng)badge='<span class="badge b-good">鉄板</span>';
+    else if(v.vpd<mVPD&&v.eng>=mEng)badge='<span class="badge b-good">隠れ名作</span>';
+    else if(v.vpd>=mVPD&&v.eng<mEng)badge='<span class="badge b-avg">入口◯中身△</span>';
+    else badge='<span class="badge b-low">見直し</span>';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><div class="vtitle">${esc(v.title)}</div><div class="vmeta">公開${Math.round(v.days)}日前 ・ エンゲージ${v.eng.toFixed(1)}%</div></td><td>${fmtFull(v.views)}</td><td><b>${v.vpd.toFixed(0)}</b>/日</td><td>${badge}</td>`;
+    tb.appendChild(tr);
+  });
+  const dark=matchMedia('(prefers-color-scheme: dark)').matches;
+  const pts=en.map(v=>{let c;if(v.isNew)c='#85B7EB';else if(v.vpd>=mVPD&&v.eng>=mEng)c='#639922';else if(v.vpd<mVPD&&v.eng>=mEng)c='#378ADD';else if(v.vpd>=mVPD&&v.eng<mEng)c='#EF9F27';else c='#888780';return{x:v.vpd,y:v.eng,r:v.impressions?Math.max(5,Math.min(20,Math.sqrt(v.impressions)/4)):8,col:c,title:v.title};});
+  const qp={id:'q',afterDraw:c=>{const{ctx,chartArea:{left,right,top,bottom},scales:{x,y}}=c;const px=x.getPixelForValue(mVPD),py=y.getPixelForValue(mEng);ctx.save();ctx.strokeStyle=dark?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(px,top);ctx.lineTo(px,bottom);ctx.moveTo(left,py);ctx.lineTo(right,py);ctx.stroke();ctx.restore();}};
+  if(quadChart)quadChart.destroy();
+  quadChart=new Chart(document.getElementById('quadChart'),{type:'bubble',data:{datasets:[{data:pts,backgroundColor:pts.map(p=>p.col+'cc'),borderColor:pts.map(p=>p.col)}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const p=c.raw;return[p.title.slice(0,24),'1日あたり '+p.x.toFixed(0)+'回 / エンゲージ '+p.y.toFixed(1)+'%'];}}}},scales:{x:{title:{display:true,text:'集客力（1日あたり再生数）→',font:{size:11}},ticks:{font:{size:10}},grid:{color:dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)'}},y:{title:{display:true,text:'刺さり度（エンゲージ率%）→',font:{size:11}},ticks:{font:{size:10}},grid:{color:dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)'}}}},plugins:[qp]});
+}
+
+function renderGrowth(){
+  if(STATE.subs<=0){if(growthChart)growthChart.destroy();return;}
+  const now=new Date(),g=STATE.monthlyGain,labels=[],ac=[],pr=[],op=[];
+  for(let i=5;i>=1;i--){const d=new Date(now);d.setMonth(d.getMonth()-i);labels.push((d.getMonth()+1)+'月');ac.push(Math.max(0,Math.round(STATE.subs-g*i)));pr.push(null);op.push(null);}
+  labels.push('現在');ac.push(STATE.subs);pr.push(STATE.subs);op.push(STATE.subs);
+  for(let i=1;i<=6;i++){const d=new Date(now);d.setMonth(d.getMonth()+i);labels.push((d.getMonth()+1)+'月');ac.push(null);pr.push(Math.round(STATE.subs+g*i));op.push(Math.round(STATE.subs+g*i*1.6));}
+  const dark=matchMedia('(prefers-color-scheme: dark)').matches;
+  if(growthChart)growthChart.destroy();
+  growthChart=new Chart(document.getElementById('growthChart'),{type:'line',data:{labels,datasets:[{label:'実績',data:ac,borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,.1)',borderWidth:2,pointRadius:3,tension:.3,spanGaps:false,fill:true},{label:'現ペース',data:pr,borderColor:'#5DCAA5',borderDash:[5,3],borderWidth:2,pointRadius:2,tension:.3,spanGaps:false},{label:'テコ入れ',data:op,borderColor:'#85B7EB',borderDash:[5,3],borderWidth:2,pointRadius:2,tension:.3,spanGaps:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtFull(v),font:{size:11}},grid:{color:dark?'rgba(255,255,255,.08)':'rgba(0,0,0,.08)'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}});
+}
+
+function renderPredictions(){
+  const now=new Date(),g=STATE.monthlyGain,fmt=d=>d.getFullYear()+'年'+(d.getMonth()+1)+'月';
+  if(STATE.subs<=0){['p3m','p6m','p1k','pMon'].forEach(id=>document.getElementById(id).textContent='登録者数が必要');document.getElementById('p3mDate').textContent='';document.getElementById('p6mDate').textContent='';return;}
+  const d3=new Date(now);d3.setMonth(d3.getMonth()+3);const d6=new Date(now);d6.setMonth(d6.getMonth()+6);
+  document.getElementById('p3m').textContent=fmtFull(STATE.subs+g*3)+'人';document.getElementById('p3mDate').textContent=fmt(d3)+'頃';
+  document.getElementById('p6m').textContent=fmtFull(STATE.subs+g*6)+'人';document.getElementById('p6mDate').textContent=fmt(d6)+'頃';
+  if(STATE.subs<1000){const m=Math.ceil((1000-STATE.subs)/Math.max(1,g));const d=new Date(now);d.setMonth(d.getMonth()+m);document.getElementById('p1k').textContent=fmt(d)+'頃';document.getElementById('pMon').textContent='登録は'+fmt(d)+'頃';}else{document.getElementById('p1k').textContent='達成済み ✓';document.getElementById('pMon').textContent='登録は達成 ✓';}
+}
+
+// ===== AI分析（/api/analyze 経由でGeminiを呼ぶ）=====
+async function triggerAI(){
+  const en=STATE.videos.map(v=>{const d=ageDays(v.publishedAt);return{...v,vpd:v.views/d,eng:v.views>0?(v.likes+v.comments)/v.views*100:0,days:d};});
+  const byV=[...en].sort((a,b)=>b.vpd-a.vpd);
+  const top=byV.slice(0,4).map(v=>`「${v.title}」(1日${v.vpd.toFixed(0)}回/エンゲージ${v.eng.toFixed(1)}%${v.ctr!=null?'/CTR'+v.ctr.toFixed(1)+'%':''})`).join('\n');
+  const bot=byV.slice(-3).map(v=>`「${v.title}」(1日${v.vpd.toFixed(0)}回)`).join('\n');
+  const aCtr=STATE.manualCtr!=null?STATE.manualCtr:(STATE.hasCtr?avg(en.filter(v=>v.ctr!=null).map(v=>v.ctr)):null);
+  const aRet=STATE.manualRet!=null?STATE.manualRet:(en.some(v=>v.retention!=null)?avg(en.filter(v=>v.retention!=null).map(v=>v.retention)):null);
+  const prompt=`あなたはYouTube成長コンサルタントです。北海道に1年前に移住して始めた、北海道の観光・飲食店・日常Vlog（雪かき・生活など）のミックスチャンネルを分析します。専門用語を避け初心者にも分かる平易な日本語で、必ず「結局どうなの？→だからどうする？」まで踏み込んでください。
+
+【データ】
+登録者: ${STATE.subs||'不明'}人 / 月間成長: 約${STATE.monthlyGain||'?'}人
+総再生: ${STATE.totalViews}回 / 動画${STATE.videoCount||en.length}本
+平均クリック率: ${aCtr!=null?aCtr.toFixed(1)+'%':'データなし'}
+平均視聴維持率: ${aRet!=null?aRet.toFixed(0)+'%':'データなし'}
+集客力の高い動画:
+${top||'動画データなし'}
+苦戦している動画:
+${bot||'-'}
+
+以下のJSON形式のみで返答（前後の説明やマークダウン記号は禁止）:
+{"summary":"現状診断。強みと弱みを具体的に。CTRや維持率があればその良し悪し（一般にCTR4-6%/維持率35-45%が標準）も評価。180字程度","prediction":"現ペースの登録者予測とテコ入れ時の差。1000人や収益化の現実的な見込み。データ不足なら何を測ればよいかも。160字程度","actions":"北海道Vlogの特性を活かした具体アクション4つ。各行を「・」で始め、なぜ効くか（どの指標が上がるか）を一言添える"}`;
+  try{
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error||('HTTP '+res.status));}
+    const data=await res.json();
+    const text=(data.text||'{}').replace(/```json|```/g,'').trim();
+    const p=JSON.parse(text);
+    document.getElementById('aiSummary').innerHTML=`<div class="conc">${esc(p.summary||'')}</div>`;
+    document.getElementById('aiPrediction').innerHTML=`<div class="conc">${esc(p.prediction||'')}</div>`;
+    document.getElementById('aiActions').innerHTML=`<div class="ai-c">${esc(p.actions||'').replace(/・/g,'<br>・')}</div>`;
+  }catch(e){
+    const m=`<p class="muted">AI分析を取得できませんでした（${esc(e.message)}）。<br>ローカルでファイルを直接開いた場合はAIは動きません。Vercel公開版でお試しください。数値・グラフ分析は全タブで利用できます。</p>`;
+    document.getElementById('aiSummary').innerHTML=m;document.getElementById('aiPrediction').innerHTML=m;document.getElementById('aiActions').innerHTML=m;
+  }
+}
+
+// ===== サンプル =====
+function loadSample(){
+  const n=Date.now();
+  STATE={subs:523,totalViews:48200,videoCount:34,monthlyGain:40,hasCtr:true,source:'サンプル',manualCtr:null,manualRet:null,videos:[
+    {title:'札幌の隠れ家カフェ巡り！地元民おすすめ5軒',publishedAt:new Date(n-4*DAY).toISOString(),views:1200,likes:95,comments:18,ctr:6.8,retention:44,impressions:18000},
+    {title:'【雪かき】北海道の冬の朝のリアルな日常',publishedAt:new Date(n-11*DAY).toISOString(),views:5800,likes:410,comments:72,ctr:7.2,retention:41,impressions:82000},
+    {title:'移住1年｜北海道に来て変わったこと10個',publishedAt:new Date(n-19*DAY).toISOString(),views:12400,likes:1050,comments:240,ctr:8.1,retention:48,impressions:160000},
+    {title:'小樽日帰り観光Vlog｜運河とお寿司と硝子細工',publishedAt:new Date(n-27*DAY).toISOString(),views:6900,likes:380,comments:55,ctr:5.4,retention:36,impressions:130000},
+    {title:'北海道のスーパーで爆買い｜物価と食材紹介',publishedAt:new Date(n-40*DAY).toISOString(),views:3200,likes:140,comments:28,ctr:3.9,retention:33,impressions:88000},
+    {title:'富良野ラベンダー畑へドライブ',publishedAt:new Date(n-58*DAY).toISOString(),views:8900,likes:520,comments:90,ctr:6.1,retention:39,impressions:150000},
+    {title:'地元の人気ラーメン店3軒食べ歩き',publishedAt:new Date(n-80*DAY).toISOString(),views:4300,likes:210,comments:33,ctr:4.5,retention:35,impressions:98000},
+    {title:'北海道移住のリアルな費用と後悔した点',publishedAt:new Date(n-110*DAY).toISOString(),views:2100,likes:88,comments:41,ctr:3.2,retention:42,impressions:70000}
+  ]};
+  document.getElementById('chName').textContent='北海道Vlogチャンネル（サンプル）';
+  document.getElementById('chSrc').textContent='サンプルデータ / クリック率あり';
+  launch();
+}
+</script>
+</body>
+</html>

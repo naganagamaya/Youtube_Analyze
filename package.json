@@ -1,0 +1,9 @@
+{
+  "name": "momoko-yt-analyzer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "北海道Vlogチャンネルの分析ダッシュボード（CSV分析 + Gemini AI提案）",
+  "engines": {
+    "node": ">=18"
+  }
+}
