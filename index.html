@@ -327,7 +327,7 @@ function fmtFull(n){return Math.round(n).toLocaleString('ja-JP');}
 function fmtK(n){if(n>=10000)return(Math.round(n/1000)/10)+'万';if(n>=1000)return(Math.round(n/100)/10)+'k';return String(Math.round(n));}
 function ageDays(iso){return Math.max(1,(Date.now()-new Date(iso))/DAY);}
 function num(v){if(v==null)return 0;const s=String(v).replace(/[^0-9.\-]/g,'');const n=parseFloat(s);return isNaN(n)?0:n;}
-function findCol(h,keys){for(const c of h){const cl=c.toLowerCase();for(const k of keys)if(cl.includes(k.toLowerCase()))return c;}return null;}
+function findCol(h,keys){for(const k of keys){const found=h.find(c=>c.toLowerCase()===k.toLowerCase());if(found)return found;}for(const k of keys){const found=h.find(c=>c.toLowerCase().includes(k.toLowerCase()));if(found)return found;}return null;}
 function avg(a){const f=a.filter(x=>x!=null&&!isNaN(x));return f.length?f.reduce((s,x)=>s+x,0)/f.length:null;}
 function median(a){const f=[...a].filter(x=>!isNaN(x)).sort((x,y)=>x-y);if(!f.length)return 0;const m=Math.floor(f.length/2);return f.length%2?f[m]:(f[m-1]+f[m])/2;}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
@@ -346,7 +346,7 @@ function parseCSV(rows){
   const cTitle=findCol(h,['動画のタイトル','動画タイトル','title','コンテンツ']);
   const cDate=findCol(h,['公開時刻','公開日','published','動画公開']);
   const cViews=findCol(h,['視聴回数','views','再生回数']);
-  const cImp=findCol(h,['表示回数','impressions']);
+  const cImp=findCol(h,['表示回数','インプレッション','impressions']);
   const cCtr=findCol(h,['クリック率','click-through','ctr']);
   const cRet=findCol(h,['平均再生率','平均視聴率','average percentage','視聴維持']);
   const cLikes=findCol(h,['高く評価','いいね','likes']);
