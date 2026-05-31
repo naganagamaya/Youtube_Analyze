@@ -357,8 +357,8 @@ function parseCSV(rows){
   const cImp=findCol(h,['表示回数','インプレッション','impressions']);
   const cCtr=findCol(h,['クリック率','click-through','ctr']);
   const cRet=findCol(h,['平均再生率','平均視聴率','average percentage','視聴維持']);
-  const cLikes=findCol(h,['高く評価','いいね','likes']);
-  const cComments=findCol(h,['コメント数','コメント','comments']);
+  const cLikes=findCol(h,['高評価数','高く評価した動画数','高く評価','いいね','likes']);
+  const cComments=findCol(h,['コメントの追加回数','コメント追加数','コメント数','コメント','comments']);
   const cEngViews=findCol(h,['エンゲージ ビュー','エンゲージビュー','engaged view']);
   const cSubsGained=findCol(h,['チャンネル登録者','チャンネル登録者を獲得','チャンネル登録者数の変化','登録者を獲得','subscribers gained','net subscribers']);
   if(!cTitle||!cViews){showError('必須項目（動画のタイトル・視聴回数）が見つかりません。CSVの列をご確認ください。');return;}
@@ -412,8 +412,8 @@ function launch(){renderMetrics();renderVideos();renderGrowth();renderPrediction
 function renderMetrics(){
   const g=document.getElementById('metrics');g.innerHTML='';
   const avgVPV=STATE.videoCount>0?STATE.totalViews/STATE.videoCount:0;
-  const hasEngViews=STATE.videos.some(v=>v.engViews!=null);
-  const eng=STATE.videos.length?(hasEngViews?STATE.videos.reduce((s,v)=>s+(v.engViews||0),0)/Math.max(1,STATE.videos.reduce((s,v)=>s+v.views,0))*100:STATE.videos.reduce((s,v)=>s+(v.likes+v.comments),0)/Math.max(1,STATE.videos.reduce((s,v)=>s+v.views,0))*100):null;
+  const hasRealEng=STATE.videos.some(v=>v.likes>0||v.comments>0);
+  const eng=STATE.videos.length&&hasRealEng?STATE.videos.reduce((s,v)=>s+(v.likes+v.comments),0)/Math.max(1,STATE.videos.reduce((s,v)=>s+v.views,0))*100:null;
   const aCtr=STATE.manualCtr!=null?STATE.manualCtr:(STATE.hasCtr?avg(STATE.videos.filter(v=>v.ctr!=null).map(v=>v.ctr)):null);
   const aRet=STATE.manualRet!=null?STATE.manualRet:(STATE.videos.some(v=>v.retention!=null)?avg(STATE.videos.filter(v=>v.retention!=null).map(v=>v.retention)):null);
   const cards=[];
@@ -430,7 +430,8 @@ function renderVideos(){
   document.getElementById('ctrNote').textContent=STATE.hasCtr?' 点の大きさ＝表示回数です。':'';
   const tb=document.getElementById('vtbody');tb.innerHTML='';
   if(!STATE.videos.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:1rem">動画データなし（CSV/APIで読み込むと表示）</td></tr>';if(quadChart)quadChart.destroy();return;}
-  const en=STATE.videos.map(v=>{const d=ageDays(v.publishedAt);return{...v,days:d,vpd:v.views/d,eng:v.views>0?(v.engViews!=null?v.engViews:v.likes+v.comments)/v.views*100:0,isNew:d<14};});
+  const useRetAsY=!STATE.videos.some(v=>v.likes>0||v.comments>0)&&STATE.videos.some(v=>v.retention!=null);
+  const en=STATE.videos.map(v=>{const d=ageDays(v.publishedAt);return{...v,days:d,vpd:v.views/d,eng:useRetAsY?(v.retention||0):v.views>0?(v.likes+v.comments)/v.views*100:0,isNew:d<14};});
   const mVPD=median(en.map(e=>e.vpd)),mEng=median(en.map(e=>e.eng));
   [...en].sort((a,b)=>b.vpd-a.vpd).forEach(v=>{
     let badge;
@@ -440,14 +441,14 @@ function renderVideos(){
     else if(v.vpd>=mVPD&&v.eng<mEng)badge='<span class="badge b-avg">入口◯中身△</span>';
     else badge='<span class="badge b-low">見直し</span>';
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><div class="vtitle">${esc(v.title)}</div><div class="vmeta">公開${Math.round(v.days)}日前 ・ エンゲージ${v.eng.toFixed(1)}%</div></td><td>${fmtFull(v.views)}</td><td><b>${v.vpd.toFixed(0)}</b>/日</td><td>${badge}</td>`;
+    tr.innerHTML=`<td><div class="vtitle">${esc(v.title)}</div><div class="vmeta">公開${Math.round(v.days)}日前 ・ ${useRetAsY?'視聴維持率':'エンゲージ'}${v.eng.toFixed(1)}%</div></td><td>${fmtFull(v.views)}</td><td><b>${v.vpd.toFixed(0)}</b>/日</td><td>${badge}</td>`;
     tb.appendChild(tr);
   });
   const dark=matchMedia('(prefers-color-scheme: dark)').matches;
   const pts=en.map(v=>{let c;if(v.isNew)c='#85B7EB';else if(v.vpd>=mVPD&&v.eng>=mEng)c='#639922';else if(v.vpd<mVPD&&v.eng>=mEng)c='#378ADD';else if(v.vpd>=mVPD&&v.eng<mEng)c='#EF9F27';else c='#888780';return{x:v.vpd,y:v.eng,r:v.impressions?Math.max(5,Math.min(20,Math.sqrt(v.impressions)/4)):8,col:c,title:v.title};});
   const qp={id:'q',afterDraw:c=>{const{ctx,chartArea:{left,right,top,bottom},scales:{x,y}}=c;const px=x.getPixelForValue(mVPD),py=y.getPixelForValue(mEng);ctx.save();ctx.strokeStyle=dark?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(px,top);ctx.lineTo(px,bottom);ctx.moveTo(left,py);ctx.lineTo(right,py);ctx.stroke();ctx.restore();}};
   if(quadChart)quadChart.destroy();
-  quadChart=new Chart(document.getElementById('quadChart'),{type:'bubble',data:{datasets:[{data:pts,backgroundColor:pts.map(p=>p.col+'cc'),borderColor:pts.map(p=>p.col)}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const p=c.raw;return[p.title.slice(0,24),'1日あたり '+p.x.toFixed(0)+'回 / エンゲージ '+p.y.toFixed(1)+'%'];}}}},scales:{x:{title:{display:true,text:'集客力（1日あたり再生数）→',font:{size:11}},ticks:{font:{size:10}},grid:{color:dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)'}},y:{title:{display:true,text:'刺さり度（エンゲージ率%）→',font:{size:11}},ticks:{font:{size:10}},grid:{color:dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)'}}}},plugins:[qp]});
+  quadChart=new Chart(document.getElementById('quadChart'),{type:'bubble',data:{datasets:[{data:pts,backgroundColor:pts.map(p=>p.col+'cc'),borderColor:pts.map(p=>p.col)}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const p=c.raw;return[p.title.slice(0,24),'1日あたり '+p.x.toFixed(0)+'回 / '+(useRetAsY?'視聴維持率':'エンゲージ')+' '+p.y.toFixed(1)+'%'];}}}},scales:{x:{title:{display:true,text:'集客力（1日あたり再生数）→',font:{size:11}},ticks:{font:{size:10}},grid:{color:dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)'}},y:{title:{display:true,text:useRetAsY?'視聴維持率（%）→':'刺さり度（エンゲージ率%）→',font:{size:11}},ticks:{font:{size:10}},grid:{color:dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)'}}}},plugins:[qp]});
 }
 
 function renderGrowth(){
