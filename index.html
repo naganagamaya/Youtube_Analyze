@@ -201,6 +201,11 @@ button{cursor:pointer;border-radius:var(--radius-sm);transition:.15s}
       </div>
       <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleCSV(event)" />
       <div id="csvOk" class="msg msg-ok hidden"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin:10px 0 4px">
+        <label class="fld" style="margin:0;white-space:nowrap">登録者数（任意）</label>
+        <input type="number" id="csvSubs" placeholder="例: 523" style="flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-size:13px" />
+        <span style="font-size:12px;color:var(--text-3)">人</span>
+      </div>
       <button class="sample" onclick="loadSample()"><i class="ti ti-flask"></i> サンプルで動きを見る</button>
     </div>
 
@@ -355,7 +360,7 @@ function parseCSV(rows){
   const vr=rows.filter(r=>{const t=(r[cTitle]||'').toString().toLowerCase();return r[cTitle]&&!t.includes('合計')&&!t.includes('total');});
   const videos=vr.map(r=>({title:r[cTitle]||'(無題)',publishedAt:cDate?(r[cDate]||new Date().toISOString()):new Date().toISOString(),views:num(r[cViews]),likes:cLikes?num(r[cLikes]):0,ctr:cCtr?num(r[cCtr]):null,retention:cRet?num(r[cRet]):null,impressions:cImp?num(r[cImp]):null,comments:cComments?num(r[cComments]):0})).filter(v=>v.views>0||v.impressions>0);
   if(!videos.length){showError('動画データが見つかりませんでした');return;}
-  const manualSubs=num(document.getElementById('mSubs').value);
+  const manualSubs=num(document.getElementById('csvSubs').value);
   STATE.videos=videos;STATE.totalViews=videos.reduce((s,v)=>s+v.views,0);STATE.videoCount=videos.length;STATE.hasCtr=videos.some(v=>v.ctr!=null);STATE.source='CSV';STATE.subs=manualSubs;STATE.manualCtr=null;STATE.manualRet=null;
   estimateGain();
   const ex=[];if(STATE.hasCtr)ex.push('クリック率');if(videos.some(v=>v.retention!=null))ex.push('視聴維持率');if(videos.some(v=>v.impressions!=null))ex.push('表示回数');
