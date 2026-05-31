@@ -79,6 +79,7 @@ button{cursor:pointer;border-radius:var(--radius-sm);transition:.15s}
 .pill{font-size:10px;padding:2px 8px;border-radius:99px;white-space:nowrap;font-weight:500}
 .pill-req{background:var(--danger-soft);color:var(--danger)}
 .pill-opt{background:var(--studio-soft);color:var(--studio)}
+.pill-no{background:var(--surface-2);color:var(--text-3)}
 .col-jp{font-weight:500} .col-why{font-size:12px;color:var(--text-2);line-height:1.5}
 
 .dropzone{border:2px dashed var(--border-2);border-radius:var(--radius-sm);padding:1.9rem 1rem;text-align:center;cursor:pointer;color:var(--text-2);font-size:14px;transition:.15s}
@@ -182,18 +183,20 @@ button{cursor:pointer;border-radius:var(--radius-sm);transition:.15s}
 
       <h3 style="margin-top:1rem"><i class="ti ti-columns"></i> CSVに必要な項目</h3>
       <table class="col-table">
-        <thead><tr><th style="width:38%">項目名（Studio表記）</th><th style="width:20%">区分</th><th>何に使う</th></tr></thead>
+        <thead><tr><th style="width:42%">YouTube Studio の列名</th><th style="width:20%">区分</th><th>何に使う</th></tr></thead>
         <tbody>
           <tr><td class="col-jp">動画のタイトル</td><td><span class="pill pill-req">必須</span></td><td class="col-why">動画の識別</td></tr>
-          <tr><td class="col-jp">動画公開時刻</td><td><span class="pill pill-req">必須</span></td><td class="col-why">新旧フェア比較（公開日数で正規化）</td></tr>
+          <tr><td class="col-jp">動画公開時刻</td><td><span class="pill pill-req">必須</span></td><td class="col-why">公開日数で正規化（新旧フェア比較）</td></tr>
           <tr><td class="col-jp">視聴回数</td><td><span class="pill pill-req">必須</span></td><td class="col-why">集客力・1日あたり再生数</td></tr>
-          <tr><td class="col-jp">高く評価（いいね）</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why">エンゲージ率（刺さり度）</td></tr>
-          <tr><td class="col-jp">表示回数</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why">マップの点の大きさ＝露出量</td></tr>
-          <tr><td class="col-jp">表示回数のクリック率</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why"><b>本命①</b> サムネ/タイトルの良し悪し</td></tr>
-          <tr><td class="col-jp">平均再生率</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why"><b>本命②</b> 視聴維持率（中身の強さ）</td></tr>
+          <tr><td class="col-jp">エンゲージ ビュー</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why"><b>エンゲージ率</b>（刺さり度）の計算に使用</td></tr>
+          <tr><td class="col-jp">チャンネル登録者</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why">合計を登録者数として成長予測に使用</td></tr>
+          <tr><td class="col-jp">インプレッション数</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why">バブルチャートの点の大きさ＝露出量</td></tr>
+          <tr><td class="col-jp">インプレッションのクリック率 (%)</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why"><b>本命①</b> サムネ/タイトルの良し悪し</td></tr>
+          <tr><td class="col-jp">平均視聴率 (%)</td><td><span class="pill pill-opt">あると◎</span></td><td class="col-why"><b>本命②</b> 視聴維持率（中身の強さ）</td></tr>
+          <tr><td class="col-jp">高く評価・コメント数</td><td><span class="pill pill-no">不要</span></td><td class="col-why">エンゲージ ビューで代替できるため不要</td></tr>
         </tbody>
       </table>
-      <p class="tiny" style="margin:.6rem 0 1rem"><i class="ti ti-bulb"></i> 最低でも<b style="color:var(--text)">必須3つ</b>があればOK。列名が多少違っても自動で探します。英語表示のStudioでも対応。</p>
+      <p class="tiny" style="margin:.6rem 0 1rem"><i class="ti ti-bulb"></i> 最低でも<b style="color:var(--text)">必須3列</b>があればOK。「エンゲージ ビュー」「チャンネル登録者」はStudioの<b>コンテンツ</b>レポートに含まれます。</p>
 
       <div class="dropzone" id="dropzone" onclick="document.getElementById('csvFile').click()">
         <i class="ti ti-upload" style="font-size:27px;display:block;margin-bottom:8px;color:var(--accent)"></i>
