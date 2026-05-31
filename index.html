@@ -356,10 +356,11 @@ function parseCSV(rows){
   const cRet=findCol(h,['平均再生率','平均視聴率','average percentage','視聴維持']);
   const cLikes=findCol(h,['高く評価','いいね','likes']);
   const cComments=findCol(h,['コメント数','コメント','comments']);
+  const cEngViews=findCol(h,['エンゲージ ビュー','エンゲージビュー','engaged view']);
   const cSubsGained=findCol(h,['チャンネル登録者','チャンネル登録者を獲得','チャンネル登録者数の変化','登録者を獲得','subscribers gained','net subscribers']);
   if(!cTitle||!cViews){showError('必須項目（動画のタイトル・視聴回数）が見つかりません。CSVの列をご確認ください。');return;}
   const vr=rows.filter(r=>{const t=(r[cTitle]||'').toString().toLowerCase();return r[cTitle]&&!t.includes('合計')&&!t.includes('total');});
-  const videos=vr.map(r=>({title:r[cTitle]||'(無題)',publishedAt:cDate?(r[cDate]||new Date().toISOString()):new Date().toISOString(),views:num(r[cViews]),likes:cLikes?num(r[cLikes]):0,ctr:cCtr?num(r[cCtr]):null,retention:cRet?num(r[cRet]):null,impressions:cImp?num(r[cImp]):null,comments:cComments?num(r[cComments]):0,subsGained:cSubsGained?num(r[cSubsGained]):0})).filter(v=>v.views>0||v.impressions>0);
+  const videos=vr.map(r=>({title:r[cTitle]||'(無題)',publishedAt:cDate?(r[cDate]||new Date().toISOString()):new Date().toISOString(),views:num(r[cViews]),likes:cLikes?num(r[cLikes]):0,ctr:cCtr?num(r[cCtr]):null,retention:cRet?num(r[cRet]):null,impressions:cImp?num(r[cImp]):null,comments:cComments?num(r[cComments]):0,engViews:cEngViews?num(r[cEngViews]):null,subsGained:cSubsGained?num(r[cSubsGained]):0})).filter(v=>v.views>0||v.impressions>0);
   if(!videos.length){showError('動画データが見つかりませんでした');return;}
   const csvSubsFromData=cSubsGained?videos.reduce((s,v)=>s+v.subsGained,0):0;
   const manualSubs=num(document.getElementById('csvSubs').value);
@@ -408,7 +409,8 @@ function launch(){renderMetrics();renderVideos();renderGrowth();renderPrediction
 function renderMetrics(){
   const g=document.getElementById('metrics');g.innerHTML='';
   const avgVPV=STATE.videoCount>0?STATE.totalViews/STATE.videoCount:0;
-  const eng=STATE.videos.length?STATE.videos.reduce((s,v)=>s+(v.likes+v.comments),0)/Math.max(1,STATE.videos.reduce((s,v)=>s+v.views,0))*100:null;
+  const hasEngViews=STATE.videos.some(v=>v.engViews!=null);
+  const eng=STATE.videos.length?(hasEngViews?STATE.videos.reduce((s,v)=>s+(v.engViews||0),0)/Math.max(1,STATE.videos.reduce((s,v)=>s+v.views,0))*100:STATE.videos.reduce((s,v)=>s+(v.likes+v.comments),0)/Math.max(1,STATE.videos.reduce((s,v)=>s+v.views,0))*100):null;
   const aCtr=STATE.manualCtr!=null?STATE.manualCtr:(STATE.hasCtr?avg(STATE.videos.filter(v=>v.ctr!=null).map(v=>v.ctr)):null);
   const aRet=STATE.manualRet!=null?STATE.manualRet:(STATE.videos.some(v=>v.retention!=null)?avg(STATE.videos.filter(v=>v.retention!=null).map(v=>v.retention)):null);
   const cards=[];
@@ -425,7 +427,7 @@ function renderVideos(){
   document.getElementById('ctrNote').textContent=STATE.hasCtr?' 点の大きさ＝表示回数です。':'';
   const tb=document.getElementById('vtbody');tb.innerHTML='';
   if(!STATE.videos.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:1rem">動画データなし（CSV/APIで読み込むと表示）</td></tr>';if(quadChart)quadChart.destroy();return;}
-  const en=STATE.videos.map(v=>{const d=ageDays(v.publishedAt);return{...v,days:d,vpd:v.views/d,eng:v.views>0?(v.likes+v.comments)/v.views*100:0,isNew:d<14};});
+  const en=STATE.videos.map(v=>{const d=ageDays(v.publishedAt);return{...v,days:d,vpd:v.views/d,eng:v.views>0?(v.engViews!=null?v.engViews:v.likes+v.comments)/v.views*100:0,isNew:d<14};});
   const mVPD=median(en.map(e=>e.vpd)),mEng=median(en.map(e=>e.eng));
   [...en].sort((a,b)=>b.vpd-a.vpd).forEach(v=>{
     let badge;
@@ -467,7 +469,7 @@ function renderPredictions(){
 
 // ===== AI分析（/api/analyze 経由でGeminiを呼ぶ）=====
 async function triggerAI(){
-  const en=STATE.videos.map(v=>{const d=ageDays(v.publishedAt);return{...v,vpd:v.views/d,eng:v.views>0?(v.likes+v.comments)/v.views*100:0,days:d};});
+  const en=STATE.videos.map(v=>{const d=ageDays(v.publishedAt);return{...v,vpd:v.views/d,eng:v.views>0?(v.engViews!=null?v.engViews:v.likes+v.comments)/v.views*100:0,days:d};});
   const byV=[...en].sort((a,b)=>b.vpd-a.vpd);
   const top=byV.slice(0,4).map(v=>`「${v.title}」(1日${v.vpd.toFixed(0)}回/エンゲージ${v.eng.toFixed(1)}%${v.ctr!=null?'/CTR'+v.ctr.toFixed(1)+'%':''})`).join('\n');
   const bot=byV.slice(-3).map(v=>`「${v.title}」(1日${v.vpd.toFixed(0)}回)`).join('\n');
